@@ -1,48 +1,59 @@
 "use client"
-import Ticket from "@/components/ticket";
-import Image from "next/image";
-import { useEffect, useRef } from "react";
-import { createSwapy } from 'swapy'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createBoard } from "../lib/utils";
 
 export default function Home() {
+  const [boardName, setBoardName] = useState("");
+  const router = useRouter();
 
-  const swapy = useRef<ReturnType<typeof createSwapy> | null>(null)
-  const container = useRef(null)
+  const handleCreateBoard = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    if (boardName.trim()) {
+      try {
+        const newBoard = await createBoard(boardName);
 
-  useEffect(() => {
-    if (container.current) {
-      swapy.current = createSwapy(container.current)
-
-      swapy.current.onSwap((event) => {
-        console.log('swap', event);
-      })
+        const boardSlug = encodeURIComponent(newBoard.id.trim().toLowerCase().replace(/\s+/g, '-'));
+        router.push(`/board/${boardSlug}`);
+      } catch (error) {
+        console.error("Failed to create board:", error);
+      }
     }
-
-    return () => {
-      swapy.current?.destroy()
-    }
-  }, [])
+  };
 
   return (
-    <div className="bg-black mx-10 container">
-      <h1 className="w-full text-center my-10 font-bold text-3xl">PROJECT TITLE</h1>
-      <div ref={container} className="flex space-x-10">
-        <div className="w-1/3 rounded">
-          <div className="bg-blue-500 px-3 font-bold rounded-3xl w-fit mb-2">To-Do</div>
-          <div className="bg-sections h-full space-y-5 p-5 min-h-32 rounded" data-swapy-slot="a">
-            <Ticket title="Ticket 1" description="a" dataSwapyItem="a"/>
-          </div>
-        </div>
+    <div className="bg-black min-h-screen flex items-center justify-center px-4">
+      <div className="bg-gray-800 rounded-lg p-8 max-w-md w-full shadow-xl">
+        <h1 className="text-center font-bold text-3xl mb-6 text-white">Create Your Kanban Board</h1>
         
-        <div className="w-1/3 bg-gray rounded h-full space-y-5 bg-sections p-5 min-h-32">
+        <form onSubmit={handleCreateBoard} className="space-y-4">
+          <div>
+            <label htmlFor="boardName" className="block text-sm font-medium text-gray-300 mb-2">
+              Board Name
+            </label>
+            <input
+              type="text"
+              id="boardName"
+              placeholder="Enter your board name..."
+              value={boardName}
+              onChange={(e) => setBoardName(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
           
-          
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200"
+          >
+            Create Board
+          </button>
+        </form>
+        
+        <div className="mt-8 text-center text-sm text-gray-400">
+          <p>Create a personal Kanban board to organize your tasks and projects.</p>
         </div>
-
-        <div className="w-1/3 bg-gray rounded h-full space-y-5 bg-sections p-5 min-h-32" data-swapy-slot="c">
-          
-        </div>
-      </div>  
+      </div>
     </div>
   );
 }
