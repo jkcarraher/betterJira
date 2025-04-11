@@ -3,12 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { createSwapy } from "swapy";
 import { useRouter } from "next/navigation";
-import { Board } from "@/types/index"
-import {getBoard} from '@/lib/utils'
+import { Board, Ticket } from "@/types/index"
+import {createTicket, getBoard} from '@/lib/utils'
+import BoardColumns from "@/components/boardColumns";
 
 export default function BoardPage({ params }: { params: { slug: string } }) {
   const [boardData, setBoardData] = useState<Board | null>(null);
   const [slug, setSlug] = useState<string | null>(null)
+  
+  const [tickets, setTickets] = useState<Ticket[]>([])
+
   
   const swapy = useRef<ReturnType<typeof createSwapy> | null>(null);
   const container = useRef(null);
@@ -52,6 +56,7 @@ export default function BoardPage({ params }: { params: { slug: string } }) {
       });
     }
 
+    return () => {
       swapy.current?.destroy();
     };
   }, []);
@@ -63,8 +68,18 @@ export default function BoardPage({ params }: { params: { slug: string } }) {
   }
 
   return (
-    <div className="bg-black mx-10 container">
+    <div className="mx-10 container">
+      <div className="flex">
+        <h1 className="w-full text-center my-10 font-bold text-3xl">{boardData.name}</h1>
+        <button
+          onClick={() => createTicket("New Ticket", slug!)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        >
+          Create Ticket
+        </button>
+      </div>
       
+      <BoardColumns tickets={[]}/>
     </div>
   );
 }

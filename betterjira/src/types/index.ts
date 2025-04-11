@@ -1,8 +1,9 @@
 export interface Ticket {
     id: string;
     title: string;
+    boardId: string;
     description: string;
-    status: "todo" | "in-progress" | "done";
+    tag: "todo" | "in-progress" | "done";
 }
   
 export interface Board {

@@ -13,7 +13,8 @@ datasource db {
 model ticket {
   id String @id @default(cuid())
   title String
-  description String
+  boardId String
+  description String?
   branchLink String?
   imageUrl String?
   tag String

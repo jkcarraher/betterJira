@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRef } from "react";
 
-export default function Ticket({ title, description, dataSwapyItem }: { title: string, description: string, dataSwapyItem: string } ) {
+export default function TicketObject({ title, description, dataSwapyItem }: { title: string, description: string, dataSwapyItem: string } ) {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     const toggleDialog = () => {
